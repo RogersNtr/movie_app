@@ -5,4 +5,9 @@ package com.example.maymoneyapp.movie_app_version1.model;
  */
 
 public class GridAdapterMovie {
+   /* private int mImageView;
+    public GridAdapterMovie(int imageView){
+        mImageView = imageView;
+    }*/
+
 }
