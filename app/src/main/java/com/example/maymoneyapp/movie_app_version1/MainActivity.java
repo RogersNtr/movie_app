@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         mGridView = findViewById(R.id.grid_movie);
+        makeAPIRequest(getString(R.string.sort_by_popularity)); //By default, sort by popularity
 
     }
     @Override
