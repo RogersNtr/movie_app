@@ -1,13 +1,16 @@
 package com.example.maymoneyapp.movie_app_version1.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Roger Nengwe on 22/07/2018.
  */
 
-public class Movies {
+public class Movies implements Parcelable {
     private String mMovieTitle;
     private String mMovieOverview; //Reviews of the Movie.
-    private String mMovieImage; //Poster path field of the "TheMovieDb" API, in the format {imageName}.jpg
+    private String mMovieImage; //URL of the "TheMovieDb" API, to get an image.
 
     public Movies(){}
     public Movies(String imageName, String movieTitle, String overview){
@@ -16,6 +19,24 @@ public class Movies {
         mMovieTitle = movieTitle;
         mMovieOverview = overview;
     }
+
+    protected Movies(Parcel in) {
+        mMovieTitle = in.readString();
+        mMovieOverview = in.readString();
+        mMovieImage = in.readString();
+    }
+
+    public static final Creator<Movies> CREATOR = new Creator<Movies>() {
+        @Override
+        public Movies createFromParcel(Parcel parcelIn) {
+            return new Movies(parcelIn);
+        }
+
+        @Override
+        public Movies[] newArray(int size) {
+            return new Movies[size];
+        }
+    };
 
     public String getmMovieTitle() {
         return mMovieTitle;
@@ -27,5 +48,18 @@ public class Movies {
 
     public String getmMovieImage(){
         return mMovieImage;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(mMovieImage);
+        parcel.writeString(mMovieTitle);
+        parcel.writeString(mMovieOverview);
+
     }
 }
