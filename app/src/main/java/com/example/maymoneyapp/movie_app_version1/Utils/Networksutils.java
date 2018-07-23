@@ -17,7 +17,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public final class Networksutils {
     final static String BASE_URL_API = "https://api.themoviedb.org/3/discover/movie";
-    final static String BASE_URL_IMAGE = "https://image.tmdb.org/t/p/w185"; // Base URL for uploading the image
+    final static String BASE_URL_IMAGE = "https://image.tmdb.org/t/p"; // Base URL for uploading the image
     final static String FILE_SIZE = "w185"; //Default size of the image. Possible to extract it from Json Response.
     final static String FILE_PATH=""; // To be extracted from the "poster_path" field of the JSON response.
     private static final String PARAM_API_KEY = "api_key";
@@ -57,7 +57,7 @@ public final class Networksutils {
     public static URL buildURLImage(String posted_path){
 
         Log.d(TAG, posted_path.replace("/", ""));
-        Uri buildUri = Uri.parse(BASE_URL_IMAGE).buildUpon().appendEncodedPath(posted_path).
+        Uri buildUri = Uri.parse(BASE_URL_IMAGE).buildUpon().appendPath(FILE_SIZE).appendEncodedPath(posted_path).
                         build();
 
         Log.d(TAG, "Value of the Url build so far :  "  + buildUri.toString());
