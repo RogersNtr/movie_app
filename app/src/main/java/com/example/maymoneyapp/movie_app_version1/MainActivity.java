@@ -2,6 +2,7 @@ package com.example.maymoneyapp.movie_app_version1;
 
 import android.graphics.Movie;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import com.example.maymoneyapp.movie_app_version1.model.GridAdapterMovie;
 import com.example.maymoneyapp.movie_app_version1.model.Movies;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,20 +26,36 @@ public class MainActivity extends AppCompatActivity {
     private int itemClicked;
     private static String TAG = MainActivity.class.getSimpleName();
     private String mJsonApiResponse;
-    private List<Movies> mArrayMovies;
+    private List<Movies> mArrayMovies = new ArrayList<>();
     private GridAdapterMovie movieAdapter;
+    private final static String SAVE_INSTANCE_GRID_KEY = "movies"; // Key for retrieving the instance saved in the Bundle
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
         mGridView = findViewById(R.id.grid_movie);
-        makeAPIRequest(getString(R.string.sort_by_popularity)); //By default, sort by popularity
+        if(savedInstanceState == null ) {
+            makeAPIRequest(getString(R.string.sort_by_popularity)); //By default, sort by popularity
+            //mArrayMovies = new ArrayList<>();
+        }
+        else if(savedInstanceState.containsKey(SAVE_INSTANCE_GRID_KEY)){
+            mArrayMovies = savedInstanceState.getParcelableArrayList(SAVE_INSTANCE_GRID_KEY);
+            showGrid(mArrayMovies);
+        }
+
+
 
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+       outState.putParcelableArrayList(SAVE_INSTANCE_GRID_KEY, (ArrayList<Movies>) mArrayMovies);
+        super.onSaveInstanceState(outState);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.settings, menu);
@@ -85,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, jsonResponse);//TODO delete
             //Parsing the Api Json Response
             List<Movies> movies = JsonUtils.parseJsonUtils(jsonResponse);
+            setmArrayMovies(movies);
             return movies;
         }
 
@@ -107,10 +126,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void showGrid(List<Movies> result) {
         movieAdapter = new GridAdapterMovie(this, result);
-        Log.d(TAG, movieAdapter.toString());
+        Log.d(TAG, String.valueOf(result.size()));
         mGridView.setAdapter(movieAdapter);
         Toast.makeText(this, "Grid", Toast.LENGTH_SHORT).show();
     }
+
+    public void setmArrayMovies(List<Movies> mArrayMovies) {
+        this.mArrayMovies = mArrayMovies;
+    }
+
     public void setJsonResponse(String jsonResponse){
         mJsonApiResponse = jsonResponse;
     }
