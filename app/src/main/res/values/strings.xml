@@ -3,4 +3,8 @@
         <!-- String Items for the Menu -->
     <string name="order_by_most_popular">Most popular</string>
     <string name="order_by_top_rated">Top rated</string>
+    <string name="cast_error">Unable to Cast </string>
+    <!--Sort value-->
+    <string name="sort_by_popularity">popularity.desc</string>
+    <string name="sort_by_vote">vote_count.desc</string>
 </resources>
