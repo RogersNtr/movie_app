@@ -2,7 +2,6 @@ package com.example.maymoneyapp.movie_app_version1.model;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,8 +63,9 @@ public class GridAdapterMovie extends ArrayAdapter<Movies>{
                     R.layout.grid_view_item, parent, false);
         }
 
-        ImageView posterImage = (ImageView) convertView.findViewById(R.id.image_movie);
+        ImageView posterImage = convertView.findViewById(R.id.image_movie);
         try {
+            assert movie != null;
             Log.d(TAG, movie.getmMovieImage());
             Picasso.with(getContext())
                     .load(movie.getmMovieImage())

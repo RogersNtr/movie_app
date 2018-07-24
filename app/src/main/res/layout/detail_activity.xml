@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:gravity="center_vertical"
     android:orientation="vertical"
     android:minHeight="?android:attr/listPreferredItemHeight"
-    tools:context=".model.DetailActivity"
-    >
+    tools:context=".model.DetailActivity">
 <!--    <android.support.v7.widget.Toolbar
         android:id="@+id/tb_movie"
         android:layout_width="match_parent"
@@ -28,31 +26,34 @@
             android:id="@+id/movie_poster_detail"
             android:layout_width="200dp"
             android:layout_height="200dp"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/poster_movie_image" />
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingLeft="10dp"
+            android:paddingLeft="7dp"
+            android:paddingRight="7dp"
+            android:paddingStart="7dp"
             >
             <TextView
                 android:id="@+id/tv_release_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Blabla"
+                android:text="@string/blind_text"
 
                 />
             <TextView
                 android:id="@+id/tv_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Blabla"
+                android:text="@string/blind_text"
                 />
             <TextView
                 android:id="@+id/tv_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Blabla"
+                android:text="@string/blind_text"
                 />
 
         </LinearLayout>
@@ -68,7 +69,7 @@
             android:id="@+id/tv_overview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Feel The Light" />
+            android:text="@string/blind_text" />
 
     </LinearLayout>
 <!--

@@ -1,21 +1,17 @@
 package com.example.maymoneyapp.movie_app_version1;
 
 import android.content.Intent;
-import android.graphics.Movie;
 import android.os.AsyncTask;
 import android.os.Parcelable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
-import android.support.v7.widget.Toolbar;
 
 import com.example.maymoneyapp.movie_app_version1.Utils.JsonUtils;
 import com.example.maymoneyapp.movie_app_version1.Utils.Networksutils;
@@ -29,11 +25,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private GridView mGridView;
-    private int itemClicked;
-    private static String TAG = MainActivity.class.getSimpleName();
-    private String mJsonApiResponse;
+    private final static String TAG = MainActivity.class.getSimpleName();
     private List<Movies> mArrayMovies = new ArrayList<>();
-    private GridAdapterMovie movieAdapter;
     private final static String SAVE_INSTANCE_GRID_KEY = "movies"; // Key for retrieving the instance saved in the Bundle
 
 
@@ -73,21 +66,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemThatWasClicked = item.getItemId();
-        String menu_title = null;
-        try{
-            menu_title = (String)item.getTitle();
-        }catch (ClassCastException e){
-            Log.e(TAG, getString(R.string.cast_error));
-            e.printStackTrace();
-        }
 
         if (itemThatWasClicked == R.id.most_popular){
             makeAPIRequest(getString(R.string.sort_by_popularity));
-            itemClicked = 0;
         }
         else if (itemThatWasClicked == R.id.top_rated){
             makeAPIRequest(getString(R.string.sort_by_vote));
-            itemClicked = 1;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -106,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         }*/
 
         protected List<Movies> doInBackground(URL... urls) {
-            String jsonResponse = null;
+            String jsonResponse;
             jsonResponse = Networksutils.getResponseFromHttpUrl(urls[0]);
             Log.d(TAG, jsonResponse);//TODO delete
             //Parsing the Api Json Response
@@ -128,12 +112,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void showErrorMessage() {
         Toast.makeText(this, "Erreur", Toast.LENGTH_SHORT).show();
-
-
     }
 
     private void showGrid(List<Movies> result) {
-        movieAdapter = new GridAdapterMovie(this, result);
+        GridAdapterMovie movieAdapter = new GridAdapterMovie(this, result);
         Log.d(TAG, String.valueOf(result.size()));
         mGridView.setAdapter(movieAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -143,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 launchDetailActivity((Movies)adapterView.getItemAtPosition(position), position);
             }
         });
-        Toast.makeText(this, "Grid", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Grid", Toast.LENGTH_SHORT).show();
     }
 
     private void launchDetailActivity(Movies itemAtPosition, int position) {
@@ -153,11 +135,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(detailIntent);
     }
 
-    public void setmArrayMovies(List<Movies> mArrayMovies) {
+    private void setmArrayMovies(List<Movies> mArrayMovies) {
         this.mArrayMovies = mArrayMovies;
     }
 
-    public void setJsonResponse(String jsonResponse){
-        mJsonApiResponse = jsonResponse;
-    }
 }

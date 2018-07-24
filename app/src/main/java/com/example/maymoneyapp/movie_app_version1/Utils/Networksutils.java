@@ -16,15 +16,15 @@ import javax.net.ssl.HttpsURLConnection;
  */
 
 public final class Networksutils {
-    final static String BASE_URL_API = "https://api.themoviedb.org/3/discover/movie";
-    final static String BASE_URL_IMAGE = "https://image.tmdb.org/t/p"; // Base URL for uploading the image
-    final static String FILE_SIZE = "w185"; //Default size of the image. Possible to extract it from Json Response.
-    final static String FILE_PATH=""; // To be extracted from the "poster_path" field of the JSON response.
+    private final static String BASE_URL_API = "https://api.themoviedb.org/3/discover/movie";
+    private final static String BASE_URL_IMAGE = "https://image.tmdb.org/t/p"; // Base URL for uploading the image
+    private final static String FILE_SIZE = "w185"; //Default size of the image. Possible to extract it from Json Response.
+    private final static String FILE_PATH=""; // To be extracted from the "poster_path" field of the JSON response.
     private static final String PARAM_API_KEY = "api_key";
-    private static String API_KEY = "2cb832e164482a5d3fab6f9d00c6a1d5";
+    private static String API_KEY = "";
 
-    final static String sortBy = "popularity.desc";
-    final static String PARAM_SORT = "sort_by";
+    private final static String sortBy = "popularity.desc";
+    private final static String PARAM_SORT = "sort_by";
     private static final String TAG = Networksutils.class.getSimpleName(); //Class Name
 
     /**
@@ -94,6 +94,7 @@ public final class Networksutils {
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
+            assert urlConnection != null;
             urlConnection.disconnect();
         }
         return response;

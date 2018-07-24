@@ -3,9 +3,7 @@ package com.example.maymoneyapp.movie_app_version1.model;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -14,7 +12,7 @@ import com.example.maymoneyapp.movie_app_version1.R;
 import com.squareup.picasso.Picasso;
 
 /**
- * Created by Etudiant UPS on 22/07/2018.
+ * Created by Roger Nengwe on 22/07/2018.
  */
 
 public class DetailActivity extends AppCompatActivity{
@@ -36,7 +34,7 @@ public class DetailActivity extends AppCompatActivity{
         mReleaseDate = findViewById(R.id.tv_release_date);
         mUserRating = findViewById(R.id.tv_rating);
         mOverview = findViewById(R.id.tv_overview);
-        mMovieImageThumbnail = (ImageView)findViewById(R.id.movie_poster_detail);
+        mMovieImageThumbnail = findViewById(R.id.movie_poster_detail);
 
         // Get the Movie Object
         Intent intent = getIntent();

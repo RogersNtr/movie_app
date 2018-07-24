@@ -12,11 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Etudiant UPS on 21/07/2018.
+ * Created by Roger Nengwe on 21/07/2018.
  */
 
 public final  class JsonUtils {
-    private final static String JSONIDIMAGE = "poster_path"; //The name of the field containing the image path value
     private final static String TAG = JsonUtils.class.getSimpleName();
     /**
      * Build the Url used to query the API.
@@ -25,12 +24,11 @@ public final  class JsonUtils {
      *@throws java.io.IOException related to network and stream reading
      * */
     public static List<Movies> parseJsonUtils(String jsonResponse){
-        Movies movies = new Movies();
         ArrayList<Movies> listOfReturnMovies = new ArrayList<>();
         try {
             JSONObject jsonRoot=new JSONObject(jsonResponse);
             JSONArray results = jsonRoot.getJSONArray("results");
-            JSONObject jsonResults = null;
+            JSONObject jsonResults;
             String imagePath, title, overview, imageName, userRating, releaseDate;
             for(int i=0; i<results.length();i++){
                 jsonResults = results.getJSONObject(i);
@@ -43,7 +41,7 @@ public final  class JsonUtils {
                     overview = jsonResults.getString("overview");
                     userRating  = jsonResults.getString("vote_average");
                     releaseDate = jsonResults.getString("release_date");
-                    listOfReturnMovies.add(new Movies(imagePath, title, overview, userRating, releaseDate));
+                    listOfReturnMovies.add(new Movies(imagePath, title, overview, userRating + "/10", releaseDate));
                 }
                 else
                     throw new NullPointerException("JsonObject not found");
