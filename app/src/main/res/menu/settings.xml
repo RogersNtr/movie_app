@@ -4,11 +4,11 @@
     <item
         android:id="@+id/most_popular"
         android:orderInCategory="1"
-        app:showAsAction="never"
+        app:showAsAction="ifRoom"
         android:title="@string/order_by_most_popular"/>
     <item
         android:id="@+id/top_rated"
         android:orderInCategory="2"
-        app:showAsAction="never"
+        app:showAsAction="ifRoom"
         android:title="@string/order_by_top_rated"/>
 </menu>

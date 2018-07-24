@@ -1,19 +1,25 @@
 package com.example.maymoneyapp.movie_app_version1;
 
+import android.content.Intent;
 import android.graphics.Movie;
 import android.os.AsyncTask;
 import android.os.Parcelable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.example.maymoneyapp.movie_app_version1.Utils.JsonUtils;
 import com.example.maymoneyapp.movie_app_version1.Utils.Networksutils;
+import com.example.maymoneyapp.movie_app_version1.model.DetailActivity;
 import com.example.maymoneyapp.movie_app_version1.model.GridAdapterMovie;
 import com.example.maymoneyapp.movie_app_version1.model.Movies;
 
@@ -37,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mGridView = findViewById(R.id.grid_movie);
+
+
         if(savedInstanceState == null ) {
             makeAPIRequest(getString(R.string.sort_by_popularity)); //By default, sort by popularity
             //mArrayMovies = new ArrayList<>();
@@ -128,7 +136,21 @@ public class MainActivity extends AppCompatActivity {
         movieAdapter = new GridAdapterMovie(this, result);
         Log.d(TAG, String.valueOf(result.size()));
         mGridView.setAdapter(movieAdapter);
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                // Log.d(TAG, ((Movies)adapterView.getItemAtPosition(position)).getmMovieImage() + "Bonjour");
+                launchDetailActivity((Movies)adapterView.getItemAtPosition(position), position);
+            }
+        });
         Toast.makeText(this, "Grid", Toast.LENGTH_SHORT).show();
+    }
+
+    private void launchDetailActivity(Movies itemAtPosition, int position) {
+        Intent detailIntent = new Intent(this, DetailActivity.class);
+        detailIntent.putExtra(DetailActivity.MOVIE_EXTRA, itemAtPosition);
+        detailIntent.putExtra(DetailActivity.MOVIE_POSITION_EXTRA, position);
+        startActivity(detailIntent);
     }
 
     public void setmArrayMovies(List<Movies> mArrayMovies) {

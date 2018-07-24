@@ -31,7 +31,7 @@ public final  class JsonUtils {
             JSONObject jsonRoot=new JSONObject(jsonResponse);
             JSONArray results = jsonRoot.getJSONArray("results");
             JSONObject jsonResults = null;
-            String imagePath, title, overview, imageName;
+            String imagePath, title, overview, imageName, userRating, releaseDate;
             for(int i=0; i<results.length();i++){
                 jsonResults = results.getJSONObject(i);
                 if(jsonResults!=null) {
@@ -41,7 +41,9 @@ public final  class JsonUtils {
                     imagePath = Networksutils.buildURLImage(imageName).toString();
                     title = jsonResults.getString("title");
                     overview = jsonResults.getString("overview");
-                    listOfReturnMovies.add(new Movies(imagePath, title, overview));
+                    userRating  = jsonResults.getString("vote_average");
+                    releaseDate = jsonResults.getString("release_date");
+                    listOfReturnMovies.add(new Movies(imagePath, title, overview, userRating, releaseDate));
                 }
                 else
                     throw new NullPointerException("JsonObject not found");
