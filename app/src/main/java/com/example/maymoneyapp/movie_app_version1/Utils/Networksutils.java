@@ -3,6 +3,8 @@ package com.example.maymoneyapp.movie_app_version1.Utils;
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.maymoneyapp.movie_app_version1.BuildConfig;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -21,7 +23,7 @@ public final class Networksutils {
     private final static String FILE_SIZE = "w185"; //Default size of the image. Possible to extract it from Json Response.
     private final static String FILE_PATH=""; // To be extracted from the "poster_path" field of the JSON response.
     private static final String PARAM_API_KEY = "api_key";
-    private static String API_KEY = "";
+    private static String API_KEY = BuildConfig.ApiKey;
 
     private final static String sortBy = "popularity.desc";
     private final static String PARAM_SORT = "sort_by";
