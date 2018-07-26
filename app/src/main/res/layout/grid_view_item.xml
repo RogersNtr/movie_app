@@ -6,5 +6,7 @@
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:scaleType="centerCrop"
+        android:padding="@dimen/padding_images"
+        android:paddingBottom="@dimen/padding_images"
         android:contentDescription="@string/poster_movie_image"/>
 </FrameLayout>

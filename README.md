@@ -3,6 +3,5 @@
 # # Project Overview
 
 # # Before Executing the app
-Upon executing the app, you must set an API KEY, in the field API_KEY of the class
-'Networksutils' in the package 'Utils'
+Upon executing the app, you must set an API KEY, in the "gradle.properties" file, under the variable 'MovieApp_API_KEY'.
 

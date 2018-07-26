@@ -10,16 +10,23 @@
     >
 
 <GridView
-
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:visibility="invisible"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:columnWidth="150dp"
     android:numColumns="auto_fit"
-    android:verticalSpacing="0dp"
+    android:verticalSpacing="2dp"
     android:horizontalSpacing="0dp"
     android:stretchMode="columnWidth"
     android:id="@+id/grid_movie">
 </GridView>
+    <TextView
+        android:id="@+id/tv_error_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/error_connection_problem"
+        android:visibility="invisible"
+        />
 
 </LinearLayout>
 

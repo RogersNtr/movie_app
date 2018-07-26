@@ -13,20 +13,22 @@ import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import static com.example.maymoneyapp.movie_app_version1.Utils.Constant.API_KEY;
+import static com.example.maymoneyapp.movie_app_version1.Utils.Constant.BASE_URL_IMAGE;
+import static com.example.maymoneyapp.movie_app_version1.Utils.Constant.FILE_SIZE;
+import static com.example.maymoneyapp.movie_app_version1.Utils.Constant.PARAM_API_KEY;
+
 /**
  * Created by Roger Nengwe on 06/07/2018.
  */
 
 public final class Networksutils {
-    private final static String BASE_URL_API = "https://api.themoviedb.org/3/discover/movie";
+   /* private final static String BASE_URL_API = "https://api.themoviedb.org/3/movie";
     private final static String BASE_URL_IMAGE = "https://image.tmdb.org/t/p"; // Base URL for uploading the image
     private final static String FILE_SIZE = "w185"; //Default size of the image. Possible to extract it from Json Response.
-    private final static String FILE_PATH=""; // To be extracted from the "poster_path" field of the JSON response.
     private static final String PARAM_API_KEY = "api_key";
-    private static String API_KEY = BuildConfig.ApiKey;
+    private static String API_KEY = BuildConfig.ApiKey;*/
 
-    private final static String sortBy = "popularity.desc";
-    private final static String PARAM_SORT = "sort_by";
     private static final String TAG = Networksutils.class.getSimpleName(); //Class Name
 
     /**
@@ -36,9 +38,8 @@ public final class Networksutils {
      *
      * */
     public static URL buildURLAPI(String searchAPIQuery){
-        Uri buildUri = Uri.parse(BASE_URL_API).buildUpon()
+        Uri buildUri = Uri.parse(Constant.BASE_URL_API).buildUpon().appendPath(searchAPIQuery)
                 .appendQueryParameter(PARAM_API_KEY, API_KEY).
-                        appendQueryParameter(PARAM_SORT, searchAPIQuery).
                         build();
 
         Log.d(TAG, "Value of the Url build so far :  "  + buildUri.toString());
@@ -80,11 +81,15 @@ public final class Networksutils {
     public static String getResponseFromHttpUrl(URL url){
         HttpsURLConnection urlConnection = null;
         String response = null;
+        InputStream inConnection = null;
 
         try {
             urlConnection = (HttpsURLConnection)url.openConnection();
-            InputStream inConnection = urlConnection.getInputStream();
-
+            Log.e(TAG, urlConnection.toString());
+            // assert urlConnection;
+            inConnection = urlConnection.getInputStream();
+            // assert inConnection ==  null;
+            // Log.e(TAG, inConnection.toString());
             Scanner scanner = new Scanner(inConnection);
             scanner.useDelimiter("\\A");
 
@@ -94,6 +99,7 @@ public final class Networksutils {
             }
             scanner.close();
         } catch (IOException e) {
+            Log.d(TAG, "+++++++++Openconnection");
             e.printStackTrace();
         }finally {
             assert urlConnection != null;

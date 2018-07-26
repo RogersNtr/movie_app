@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.maymoneyapp.movie_app_version1.Utils.JsonUtils;
@@ -25,10 +26,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private GridView mGridView;
+    private TextView mTextView;
+    private Boolean isErrorOccured = false;
     private final static String TAG = MainActivity.class.getSimpleName();
     private List<Movies> mArrayMovies = new ArrayList<>();
     private final static String SAVE_INSTANCE_GRID_KEY = "movies"; // Key for retrieving the instance saved in the Bundle
-
+    private static final String SAVE_OCCURENCE_ERROR = "error_message";
 
 
     @Override
@@ -36,15 +39,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mGridView = findViewById(R.id.grid_movie);
+        mTextView = findViewById(R.id.tv_error_message);
 
 
         if(savedInstanceState == null ) {
-            makeAPIRequest(getString(R.string.sort_by_popularity)); //By default, sort by popularity
+            if (!isErrorOccured)
+                makeAPIRequest(getString(R.string.sort_by_popularity)); //By default, sort by popularity
+            else
+                showErrorMessage();
             //mArrayMovies = new ArrayList<>();
         }
         else if(savedInstanceState.containsKey(SAVE_INSTANCE_GRID_KEY)){
-            mArrayMovies = savedInstanceState.getParcelableArrayList(SAVE_INSTANCE_GRID_KEY);
-            showGrid(mArrayMovies);
+            if (!isErrorOccured) {
+                mArrayMovies = savedInstanceState.getParcelableArrayList(SAVE_INSTANCE_GRID_KEY);
+                showGrid(mArrayMovies);
+            }else{
+                showErrorMessage();
+            }
         }
 
 
@@ -68,10 +79,16 @@ public class MainActivity extends AppCompatActivity {
         int itemThatWasClicked = item.getItemId();
 
         if (itemThatWasClicked == R.id.most_popular){
-            makeAPIRequest(getString(R.string.sort_by_popularity));
+            if (!isErrorOccured)
+                makeAPIRequest(getString(R.string.sort_by_popularity));
+            else
+                showErrorMessage();
         }
         else if (itemThatWasClicked == R.id.top_rated){
-            makeAPIRequest(getString(R.string.sort_by_vote));
+            if (!isErrorOccured)
+                makeAPIRequest(getString(R.string.sort_by_vote));
+            else
+                showErrorMessage();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -91,16 +108,23 @@ public class MainActivity extends AppCompatActivity {
 
         protected List<Movies> doInBackground(URL... urls) {
             String jsonResponse;
+            List<Movies> movies = null;
             jsonResponse = Networksutils.getResponseFromHttpUrl(urls[0]);
-            Log.d(TAG, jsonResponse);//TODO delete
-            //Parsing the Api Json Response
-            List<Movies> movies = JsonUtils.parseJsonUtils(jsonResponse);
+            Log.e(TAG, jsonResponse + "json response");//TODO delete
+            if(jsonResponse !=null) {
+                //Parsing the Api Json Response
+                 movies = JsonUtils.parseJsonUtils(jsonResponse);
+            }else{
+                isErrorOccured = true;
+                // finish();
+            }
             setmArrayMovies(movies);
             return movies;
         }
 
         protected void onPostExecute(List<Movies> result) {
             //mLoadingIndicator.setVisibility(View.INVISIBLE);
+            //Log.e(TAG, result.toString());
             if (result != null && !result.isEmpty()) {
                 showGrid(result);
             } else {
@@ -111,10 +135,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showErrorMessage() {
+        mTextView.setVisibility(View.VISIBLE);
         Toast.makeText(this, "Erreur", Toast.LENGTH_SHORT).show();
     }
 
     private void showGrid(List<Movies> result) {
+        mGridView.setVisibility(View.VISIBLE);
         GridAdapterMovie movieAdapter = new GridAdapterMovie(this, result);
         Log.d(TAG, String.valueOf(result.size()));
         mGridView.setAdapter(movieAdapter);
