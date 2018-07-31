@@ -11,6 +11,9 @@ public final class MovieContract {
     //Variables for the content Resolver
     public static final String CONTENT_AUTHORITHY = "com.example.maymoneyapp.movie_app_version1.data.data";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITHY);
+    //Constant for the Provider
+    public static final int MOVIE = 100;
+    public static final int MOVIE_WITH_ID = 101;
 
     public static class MovieEntry implements BaseColumns{
         //Defining Table elements
