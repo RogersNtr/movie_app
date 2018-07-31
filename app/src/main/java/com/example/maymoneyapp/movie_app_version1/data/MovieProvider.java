@@ -33,12 +33,13 @@ public class MovieProvider extends ContentProvider {
     public boolean onCreate() {
         Context context = getContext();
         mMovieDbHelper  = new MovieDbHelper(context);
-        return false;
+        return true;
     }
 
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String s, @Nullable String[] strings1, @Nullable String s1) {
+
         return null;
     }
 
@@ -69,7 +70,7 @@ public class MovieProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Unknown Uri: " + uri);
         }
         if (getContext()!=null)
-            getContext().getContentResolver().notifyChange(uri, null);
+            getContext().getContentResolver().notifyChange(uri, null);//Notify the resolver of the change
         else
             throw new NullPointerException("Unable to get the context in " + MovieProvider.class.getSimpleName());
         return returnUri;

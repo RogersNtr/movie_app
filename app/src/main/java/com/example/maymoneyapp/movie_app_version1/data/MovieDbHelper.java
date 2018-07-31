@@ -11,11 +11,18 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class MovieDbHelper extends SQLiteOpenHelper {
     private static final String DATA_BASE_NAME = "UserFavoriteMovie.db";
     private static final int DATA_BASE_VERSION = 1;
-    private static final String SQL_CREATE_ENTITIES = "CREATE TABLE " + MovieContract.MovieEntry.TABLE_NAME + " (" +
-            MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY," +
-            MovieContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER ," +
-            MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL" +
-            MovieContract.MovieEntry.COLUMN_MOVIE_TRAILER + "TEXT NOT NULL";
+   /* private static final String SQL_CREATE_ENTITIES = "CREATE TABLE " + MovieContract.MovieEntry.TABLE_NAME + " (" +
+            MovieContract.MovieEntry._ID + " INTEGER PRIMARY KEY, " +
+            MovieContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER, " +
+            MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " +
+            MovieContract.MovieEntry.COLUMN_MOVIE_TRAILER + " TEXT NOT NULL);";*/
+
+    private static final String SQL_CREATE_ENTITIES = "CREATE TABLE " +
+            MovieContract.MovieEntry.TABLE_NAME + "(" + MovieContract.MovieEntry._ID +
+            " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            MovieContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER, " +
+            MovieContract.MovieEntry.COLUMN_MOVIE_TITLE +
+            " TEXT NOT NULL);";
 
     private static final String SQL_DELETE_ENTITIES = "DROP TABLE IF EXISTS " + MovieContract.MovieEntry.TABLE_NAME;
 

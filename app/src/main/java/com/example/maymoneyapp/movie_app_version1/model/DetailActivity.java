@@ -1,17 +1,22 @@
 package com.example.maymoneyapp.movie_app_version1.model;
 
 import android.app.SearchManager;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,6 +27,7 @@ import com.example.maymoneyapp.movie_app_version1.R;
 import com.example.maymoneyapp.movie_app_version1.Utils.Constant;
 import com.example.maymoneyapp.movie_app_version1.Utils.JsonUtils;
 import com.example.maymoneyapp.movie_app_version1.Utils.Networksutils;
+import com.example.maymoneyapp.movie_app_version1.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
@@ -38,6 +44,7 @@ public class DetailActivity extends AppCompatActivity{
     private TextView mUserRating;
     private TextView mReleaseDate;
     private TextView mOverview;
+    private TextView mTvCurrentMenuItem; //The menu item selected (Review or Trailers).
     private ListView mReview;
     private List<String> mListReview;
     private ListView mTrailersListView;
@@ -45,6 +52,7 @@ public class DetailActivity extends AppCompatActivity{
     private ImageView mMovieImageThumbnail;
     private List<String> mTrailersList;
     private boolean isErrorOccuredDetail = false;
+    private boolean mFavorite = true; //A variable use to favorite or unfavorite a movie.
 
 
     @Override
@@ -58,6 +66,7 @@ public class DetailActivity extends AppCompatActivity{
         mUserRating = findViewById(R.id.tv_rating);
         mOverview = findViewById(R.id.tv_overview);
         mMovieImageThumbnail = findViewById(R.id.movie_poster_detail);
+        mTvCurrentMenuItem = findViewById(R.id.tv_label_selected);
         mReview = findViewById(R.id.lv_reviews);
         mTrailersListView = findViewById(R.id.lv_trailers);
 
@@ -69,20 +78,15 @@ public class DetailActivity extends AppCompatActivity{
             Log.d(TAG, "+++++++++++++GOGOGOG");
             mMovieDetails = intent.getParcelableExtra(Constant.MOVIE_EXTRA);
             assert mMovieDetails == null;
-            makeRequestAPIMovies();
-            //Log.e(TAG, mTrailersList.toString());
-            /*if(mMovieDetails !=null && !isErrorOccuredDetail){
-                //Populate the UI
-                assert mTrailersList == null;
-                showDetails(mTrailersList);
-                //populateUI();
-            }*/
+            makeRequestAPIMovies(getString(R.string.show_trailers));//Show trailers by default.
         }else{
             mMovieDetails = savedInstanceState.getParcelable(Constant.PARCELABLE_MOVIE_DETAIL_KEY);
             mTrailersList = savedInstanceState.getStringArrayList(Constant.MOVIE_TRAILER_KEY);
             mListReview = savedInstanceState.getStringArrayList(Constant.MOVIE_REVIEWS_KEY);
-            showDetailsTrailer(mTrailersList);
-            showDetailsReviews(mListReview);
+            if (mTrailersList == null)
+                showDetailsReviews(mListReview);
+            else if (mListReview == null)
+                showDetailsTrailer(mTrailersList);
         }
 
     }
@@ -97,7 +101,49 @@ public class DetailActivity extends AppCompatActivity{
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.detail_reviews_trailers, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemClickId = item.getItemId();
+        if (R.id.menu_item_review == itemClickId){
+            makeRequestAPIMovies(getString(R.string.show_reviews));
+        }else if (R.id.menu_item_trailer == itemClickId){
+            makeRequestAPIMovies(getString(R.string.show_trailers));
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    /**
+     * Function to handle Click of the Button Mark as Favorite in the detail Screen.
+     * @param view: The view button that has been clicked
+     * */
+    public void onClickMarkAsFavorite(View view) {
+        ContentValues contentValues = new ContentValues();
+        Button btn = (Button)view;
+        if (mMovieDetails != null ) {
+            if (mFavorite) {
+                //stack data in the content value
+                mFavorite = false;
+                view.setBackgroundColor(getResources().getColor(R.color.green_light));
+                btn.setText(getString(R.string.mark_as_unfavorite_btn));
+                Log.d(TAG, "value of ID : " + mMovieDetails.getmMovieId());
+                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, mMovieDetails.getmMovieId());
+                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, mMovieDetails.getmMovieTitle());
+                //contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TRAILER, mTrailersList);
+
+                //Insert data in the database using a content resolver
+                Uri uri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
+                if (uri !=null)
+                    Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
+            }else{
+                mFavorite  = true;
+                btn.setBackgroundColor(getResources().getColor(R.color.dark_gray));
+                
+            }
+
+        }
     }
 
     //===Asyntask for Trailers
@@ -168,6 +214,9 @@ public class DetailActivity extends AppCompatActivity{
     //====Helper methods
     private void showDetailsTrailer(List<String> trailerList) {
         populateUI();
+        mReview.setVisibility(View.GONE);
+        mTrailersListView.setVisibility(View.VISIBLE);
+        mTvCurrentMenuItem.setText(getString(R.string.trailer_label));
         ArrayAdapter<String> arrayAdapterTrailers = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, trailerList);
         mTrailersListView.setAdapter(arrayAdapterTrailers);
         mTrailersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -178,16 +227,20 @@ public class DetailActivity extends AppCompatActivity{
         });
     }
 
+    private void showDetailsReviews(List<String> reviewList) {
+        mTrailersListView.setVisibility(View.GONE);
+        mReview.setVisibility(View.VISIBLE);
+        mTvCurrentMenuItem.setText(getString(R.string.label_reviews));
+        ArrayAdapter<String> arrayAdapterReview = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, reviewList);
+        mReview.setAdapter(arrayAdapterReview);
+    }
+
     private void performSearchTrailer(String query){
         Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
         intent.putExtra(SearchManager.QUERY, query);
         if (intent.resolveActivity(getPackageManager()) != null){
             startActivity(intent);
         }
-    }
-    private void showDetailsReviews(List<String> reviewList) {
-        ArrayAdapter<String> arrayAdapterReview = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, reviewList);
-        mReview.setAdapter(arrayAdapterReview);
     }
 
     private void showErrorMessage() {
@@ -221,8 +274,10 @@ public class DetailActivity extends AppCompatActivity{
         mListReview = reviews;
     }
 
-
-    private void makeRequestAPIMovies() {
+    /**
+     * @param requestType : It represent the type of request(Review or trailer) trigger by te user.
+     * */
+    private void makeRequestAPIMovies(String requestType) {
         int movieID=-100 ;
         ArrayList<URL> urls = new ArrayList<>();
         URL urlReview = null;
@@ -244,8 +299,12 @@ public class DetailActivity extends AppCompatActivity{
                         showErrorMessage();
                         e.printStackTrace();
                     }
-                    new MovieDetailAPITrailerRequest().execute(urlVideos);
-                    new MovieDetailAPIReviewsRequest().execute(urlReview);
+                    if (requestType.equalsIgnoreCase(getString(R.string.show_trailers)))
+                        new MovieDetailAPITrailerRequest().execute(urlVideos);
+                    else if (requestType.equalsIgnoreCase(getString(R.string.show_reviews)))
+                        new MovieDetailAPIReviewsRequest().execute(urlReview);
+                    else
+                        showErrorMessage();
                 }
             }
         }

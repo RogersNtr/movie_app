@@ -66,22 +66,29 @@
                 android:text="@string/blind_text"
                 android:padding="5dp"
                 />
-            <TextView
+            <Button
+                android:id="@+id/btn_favorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mark_as_favorite_btn"
+                android:padding="5dp"
+                android:onClick="onClickMarkAsFavorite"
+                android:background="@android:color/darker_gray"
+                />
+            <!--<TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_reviews"
                 android:typeface="serif"
                 android:textStyle="bold"
-                />
-            <ListView
+                />-->
+            <!--<ListView
                 android:id="@+id/lv_reviews"
                 android:layout_width="wrap_content"
                 android:layout_height="100dp"
                 android:padding="5dp"
                 android:typeface="serif"
-                >
-
-            </ListView>
+                />-->
            <!-- <TextView
                 android:id="@+id/tv_reviews"
                 android:layout_width="wrap_content"
@@ -117,7 +124,7 @@
         android:background="@android:color/darker_gray"/>
 
     <TextView
-        android:id="@+id/tv_trailer"
+        android:id="@+id/tv_label_selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/trailer_label"
@@ -126,9 +133,19 @@
         android:typeface="serif"
         />
     <ListView
+        android:id="@+id/lv_reviews"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        >
+
+    </ListView>
+    <ListView
         android:id="@+id/lv_trailers"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        >
 
     </ListView>
 </LinearLayout>

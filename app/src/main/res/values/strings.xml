@@ -9,10 +9,14 @@
     <string name="sort_by_vote">top_rated</string>
     <string name="sort_by_favorite">my_favorite</string>
 
+    <!--Detail Activity strings-->
     <string name="poster_movie_image">Poster Movie image</string>
     <string name="blind_text">Blabla</string>
     <string name="trailer_label">Trailers : </string>
     <string name="label_reviews">Reviews : </string>
+    <string name="mark_as_favorite_btn">Mark As Favorite </string>
+    <string name="mark_as_unfavorite_btn">Unfavorite</string>
+
     <!--Menu for detail Activity-->
     <string name="show_reviews">Reviews</string>
     <string name="show_trailers">Trailers</string>
