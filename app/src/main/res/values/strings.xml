@@ -3,12 +3,20 @@
         <!-- String Items for the Menu -->
     <string name="order_by_most_popular">Most popular</string>
     <string name="order_by_top_rated">Top rated</string>
+    <string name="order_by_favorite">Favorites</string>
     <!--Sort value-->
     <string name="sort_by_popularity">popular</string>
     <string name="sort_by_vote">top_rated</string>
     <string name="sort_by_favorite">my_favorite</string>
+
     <string name="poster_movie_image">Poster Movie image</string>
     <string name="blind_text">Blabla</string>
+    <string name="trailer_label">Trailers : </string>
+    <string name="label_reviews">Reviews : </string>
+    <!--Menu for detail Activity-->
+    <string name="show_reviews">Reviews</string>
+    <string name="show_trailers">Trailers</string>
+
     <!--Error Message-->
     <string name="error_connection_problem">A Connection Problem occur, please try letter or make sure you used the proper API Key</string>
     <string name="error_Api_key">Make sure you used the proper API Key, please.</string>

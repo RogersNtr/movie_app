@@ -34,14 +34,29 @@ public final class Networksutils {
     /**
      * Build the Url used to query the API.
      * @param searchAPIQuery the way to sort the movie(by popular movie or voting range).
+     * @param movieId the id of the image that we want to see the review
      * @return The url used to query the TheMovieApi for movies
      *
      * */
-    public static URL buildURLAPI(String searchAPIQuery){
-        Uri buildUri = Uri.parse(Constant.BASE_URL_API).buildUpon().appendPath(searchAPIQuery)
+    public static URL buildURLDetail(String searchAPIQuery, int movieId){
+        Uri buildUri = null;
+        buildUri = Uri.parse(Constant.BASE_URL_API).buildUpon().appendPath(String.valueOf(movieId)).appendEncodedPath(searchAPIQuery)
                 .appendQueryParameter(PARAM_API_KEY, API_KEY).
                         build();
-
+        Log.d(TAG, "Value of the Url build so far :  "  + buildUri.toString());
+        URL url  = null;
+        try {
+            url = new URL(buildUri.toString());
+        }catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return url;
+    }
+    public static URL buildURLAPI(String searchAPIQuery){
+        Uri buildUri = null;
+        buildUri = Uri.parse(Constant.BASE_URL_API).buildUpon().appendPath(searchAPIQuery)
+                .appendQueryParameter(PARAM_API_KEY, API_KEY).
+                            build();
         Log.d(TAG, "Value of the Url build so far :  "  + buildUri.toString());
         URL url  = null;
         try {

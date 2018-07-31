@@ -14,6 +14,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.maymoneyapp.movie_app_version1.Utils.Constant;
 import com.example.maymoneyapp.movie_app_version1.Utils.JsonUtils;
 import com.example.maymoneyapp.movie_app_version1.Utils.Networksutils;
 import com.example.maymoneyapp.movie_app_version1.model.DetailActivity;
@@ -57,9 +58,6 @@ public class MainActivity extends AppCompatActivity {
                 showErrorMessage();
             }
         }
-
-
-
     }
 
     @Override
@@ -95,11 +93,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void makeAPIRequest(String searchCriteria) {
         //Call the Build URl function
-        URL url = Networksutils.buildURLAPI(searchCriteria);
-        Log.d(TAG, url.toString()); //TODO to delete
-        new APIRequest().execute(url);
+        URL urlMain = Networksutils.buildURLAPI(searchCriteria);
+        Log.d(TAG, urlMain.toString()); //TODO to delete
+        new APIRequest().execute(urlMain);
     }
-    private class APIRequest extends AsyncTask<URL, Void, List<Movies>> {
+    public class APIRequest extends AsyncTask<URL, Void, List<Movies>> {
         /*@Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -156,8 +154,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void launchDetailActivity(Movies itemAtPosition, int position) {
         Intent detailIntent = new Intent(this, DetailActivity.class);
-        detailIntent.putExtra(DetailActivity.MOVIE_EXTRA, itemAtPosition);
-        detailIntent.putExtra(DetailActivity.MOVIE_POSITION_EXTRA, position);
+        detailIntent.putExtra(Constant.MOVIE_EXTRA, itemAtPosition);
+        detailIntent.putExtra(Constant.MOVIE_POSITION_EXTRA, position);
         startActivity(detailIntent);
     }
 
