@@ -21,8 +21,8 @@ public class MovieDbHelper extends SQLiteOpenHelper {
             MovieContract.MovieEntry.TABLE_NAME + "(" + MovieContract.MovieEntry._ID +
             " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             MovieContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER, " +
-            MovieContract.MovieEntry.COLUMN_MOVIE_TITLE +
-            " TEXT NOT NULL);";
+            MovieContract.MovieEntry.COLUMN_MOVIE_TITLE + " TEXT NOT NULL, " +
+            MovieContract.MovieEntry.COLUMN_MOVIE_URL + " TEXT NOT NULL);";
 
     private static final String SQL_DELETE_ENTITIES = "DROP TABLE IF EXISTS " + MovieContract.MovieEntry.TABLE_NAME;
 

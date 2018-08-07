@@ -21,6 +21,7 @@ public final class MovieContract {
         public static final String TABLE_NAME = "user_movie_favorite";
         public static final String COLUMN_MOVIE_ID = "favorite_movie_id";
         public static final String COLUMN_MOVIE_TITLE = "favorite_movie_title";
+        public static final String COLUMN_MOVIE_URL = "favorite_movie_url";
         // public static final String COLUMN_MOVIE_TRAILER = "favorite_movie_trailer";
 
         //Building the Content URI

@@ -18,9 +18,9 @@ public class Movies implements Parcelable {
     private String mReviewContent;
 
     public Movies(){}
-    public Movies(String imageName, String movieTitle, String overview, String userRating, String releaseDate, int movieId){
+    public Movies(String imageURL, String movieTitle, String overview, String userRating, String releaseDate, int movieId){
         //TODO Add the additional parameters of the function in future implementation
-        mMovieImage = imageName;
+        mMovieImage = imageURL;
         mMovieTitle = movieTitle;
         mMovieOverview = overview;
         mUserRating = userRating;

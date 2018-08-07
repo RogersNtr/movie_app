@@ -52,7 +52,7 @@ public class DetailActivity extends AppCompatActivity{
     private ImageView mMovieImageThumbnail;
     private List<String> mTrailersList;
     private boolean isErrorOccuredDetail = false;
-    private boolean mFavorite = true; //A variable use to favorite or unfavorite a movie.
+    private boolean mIsAlreadyMarkAsFavorite = true; //A variable use to favorite or unfavorite a movie.
 
 
     @Override
@@ -122,15 +122,18 @@ public class DetailActivity extends AppCompatActivity{
     public void onClickMarkAsFavorite(View view) {
         ContentValues contentValues = new ContentValues();
         Button btn = (Button)view;
+        Log.d(TAG, "value of mMovieDetails : " + mMovieDetails.getmMovieId());
         if (mMovieDetails != null ) {
-            if (mFavorite) {
+            if (mIsAlreadyMarkAsFavorite) {
+
                 //stack data in the content value
-                mFavorite = false;
+                mIsAlreadyMarkAsFavorite = false;
                 view.setBackgroundColor(getResources().getColor(R.color.green_light));
                 btn.setText(getString(R.string.mark_as_unfavorite_btn));
                 Log.d(TAG, "value of ID : " + mMovieDetails.getmMovieId());
                 contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, mMovieDetails.getmMovieId());
                 contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, mMovieDetails.getmMovieTitle());
+                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_URL, mMovieDetails.getmMovieImage());
                 //contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TRAILER, mTrailersList);
 
                 //Insert data in the database using a content resolver
@@ -138,9 +141,10 @@ public class DetailActivity extends AppCompatActivity{
                 if (uri !=null)
                     Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
             }else{
-                mFavorite  = true;
+                mIsAlreadyMarkAsFavorite = true;
                 btn.setBackgroundColor(getResources().getColor(R.color.dark_gray));
-                
+                btn.setText(getString(R.string.mark_as_favorite_btn));
+
             }
 
         }

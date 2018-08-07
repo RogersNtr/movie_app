@@ -1,6 +1,7 @@
 package com.example.maymoneyapp.movie_app_version1.model;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.example.maymoneyapp.movie_app_version1.R;
+import com.example.maymoneyapp.movie_app_version1.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -19,9 +21,11 @@ import java.util.List;
  */
 
 public class GridAdapterMovie extends ArrayAdapter<Movies>{
-    private final static String TAG = GridAdapterMovie.class.getSimpleName();
+    private Cursor mCursor; // The cursor that hold data from the database query.
 
+    private final static String TAG = GridAdapterMovie.class.getSimpleName();
     private static final String LOG_TAG = GridAdapterMovie.class.getSimpleName();
+    private boolean isFavoriteClicked = false;
 
     /**
      * This is our own custom constructor (it doesn't mirror a superclass constructor).
@@ -64,18 +68,55 @@ public class GridAdapterMovie extends ArrayAdapter<Movies>{
         }
 
         ImageView posterImage = convertView.findViewById(R.id.image_movie);
-        try {
-            assert movie != null;
-            Log.d(TAG, movie.getmMovieImage());
-            Picasso.with(getContext())
-                    .load(movie.getmMovieImage())
-                    .into(posterImage);
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }
+        if (!isFavoriteClicked) {
+            try {
+                assert movie != null;
+                Log.d(TAG, movie.getmMovieImage());
+                Picasso.with(getContext())
+                        .load(movie.getmMovieImage())
+                        .into(posterImage);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        }else {
+            if (mCursor != null) {
+                int Index = mCursor.getColumnIndex(MovieContract.MovieEntry._ID);
+                int movieIndexColumn = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
+                int movieTitleIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE);
+                int movieImageUrlIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_URL);
 
+                int movieID = mCursor.getInt(movieIndexColumn);
+                String movieTitle = mCursor.getString(movieIndexColumn);
+                String movieImageUrl = mCursor.getString(movieImageUrlIndex);
+
+                try {
+                    assert movie != null;
+                    Log.d(TAG, movie.getmMovieImage());
+                    Picasso.with(getContext())
+                            .load(movieImageUrl)
+                            .into(posterImage);
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
         return convertView;
     }
 
+    public Cursor swapCursor(Cursor dataCursor) {
+        //check if the cursor is the same as the previous cursor
+        Log.d(TAG, "entered swapCursor");
+        if (mCursor == dataCursor)
+            return null;
+        Cursor temp = mCursor; //Old cursor
+        this.mCursor = dataCursor; //New Cursor value assigns.
+
+        //Check if the cursor is valid one and then update the cursor
+        if (dataCursor != null) {
+            this.notifyDataSetChanged();
+            Log.d(TAG, "entered swapCursor notif");
+        }
+        return temp;//Previous cursor return
+    }
 }
