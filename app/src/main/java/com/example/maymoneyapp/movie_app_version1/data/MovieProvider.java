@@ -54,7 +54,7 @@ public class MovieProvider extends ContentProvider {
         }
         //Set a notification Uri to the Cursor.
         returnCursor.setNotificationUri(getContext().getContentResolver(), uri);
-        return null;
+        return returnCursor;
     }
 
     @Nullable

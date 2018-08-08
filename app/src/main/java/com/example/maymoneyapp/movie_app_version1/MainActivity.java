@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             }
         }
         Log.e(TAG, "init Loader start");
-        getSupportLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
+        //getSupportLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
         Log.e(TAG, "init Loader end");
     }
 
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onResume();
 
         // re-queries for all movies
-        getSupportLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
+        //getSupportLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
     }
 
     @Override
@@ -101,25 +101,30 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         int itemThatWasClicked = item.getItemId();
 
         if (itemThatWasClicked == R.id.most_popular){
-            if (!isErrorOccured)
+            if (!isErrorOccured) {
                 makeAPIRequest(getString(R.string.sort_by_popularity));
+                setTitle(getResources().getString(R.string.movie_title_popular));
+            }
             else
                 showErrorMessage();
         }
         else if (itemThatWasClicked == R.id.top_rated){
-            if (!isErrorOccured)
+            if (!isErrorOccured) {
                 makeAPIRequest(getString(R.string.sort_by_vote));
+                setTitle(getResources().getString(R.string.movie_title_top_rated));
+            }
             else
                 showErrorMessage();
         }
         else if(itemThatWasClicked == R.id.favorite){
             startLoader(null);
+            setTitle(getResources().getString(R.string.movie_title_favorite));
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void startLoader(Bundle bundle){
-        //getSupportLoaderManager().restartLoader(CURSOR_LOADER_ID, bundle, this);
+        getSupportLoaderManager().initLoader(CURSOR_LOADER_ID, bundle, this);
         //mGridMovieAdapter.swapCursor(data);
     }
 
@@ -195,13 +200,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (mGridMovieAdapter !=null){
-            //mGridMovieAdapter.swapCursor(data);
+            /*if (data !=null)
+                mGridMovieAdapter.clear();*/
+            mGridMovieAdapter.swapCursor(data, true);
             Toast.makeText(this, "1. mGridMovieAdapter : " + mGridMovieAdapter, Toast.LENGTH_LONG).show();
         }
-        else
-            Toast.makeText(this, "mGridMovieAdapter : " + mGridMovieAdapter, Toast.LENGTH_LONG).show();
 
     }
+
     /**
      * Called when a previously created loader is being reset, and thus
      * making its data unavailable.
@@ -211,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mGridMovieAdapter.swapCursor(null);
+        mGridMovieAdapter.swapCursor(null, false);
     }
 
     public class APIRequest extends AsyncTask<URL, Void, List<Movies>> {
@@ -248,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         }
     }
+
 
     private void showErrorMessage() {
         mTextView.setVisibility(View.VISIBLE);

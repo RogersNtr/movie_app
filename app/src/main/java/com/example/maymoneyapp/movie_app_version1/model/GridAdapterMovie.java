@@ -25,7 +25,7 @@ public class GridAdapterMovie extends ArrayAdapter<Movies>{
 
     private final static String TAG = GridAdapterMovie.class.getSimpleName();
     private static final String LOG_TAG = GridAdapterMovie.class.getSimpleName();
-    private boolean isFavoriteClicked = false;
+    private boolean mIsFavoriteClicked = false;
 
     /**
      * This is our own custom constructor (it doesn't mirror a superclass constructor).
@@ -57,7 +57,7 @@ public class GridAdapterMovie extends ArrayAdapter<Movies>{
     public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         // Gets the AndroidFlavor object from the ArrayAdapter at the appropriate position
         Movies movie = getItem(position);
-
+        //By doing this we re-inflate the view for the Cursor data
         // Adapters recycle views to AdapterViews.
         // If this is a new View object we're getting, then inflate the layout.
         // If not, this view already has the layout inflated from a previous call to getView,
@@ -68,7 +68,9 @@ public class GridAdapterMovie extends ArrayAdapter<Movies>{
         }
 
         ImageView posterImage = convertView.findViewById(R.id.image_movie);
-        if (!isFavoriteClicked) {
+        Log.e(TAG, "Enter getView  " + mIsFavoriteClicked);
+        if (!mIsFavoriteClicked) {
+
             try {
                 assert movie != null;
                 Log.d(TAG, movie.getmMovieImage());
@@ -79,24 +81,33 @@ public class GridAdapterMovie extends ArrayAdapter<Movies>{
                 e.printStackTrace();
             }
         }else {
+            Log.e(TAG, "Enter getView Update of the Cursor: " + mCursor);
             if (mCursor != null) {
+                //clear();
+
+                Log.e(TAG, "Enter getView Update of the Cursor");
                 int Index = mCursor.getColumnIndex(MovieContract.MovieEntry._ID);
                 int movieIndexColumn = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
                 int movieTitleIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE);
                 int movieImageUrlIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_URL);
 
-                int movieID = mCursor.getInt(movieIndexColumn);
-                String movieTitle = mCursor.getString(movieIndexColumn);
-                String movieImageUrl = mCursor.getString(movieImageUrlIndex);
+                boolean isPositionReachable = mCursor.moveToPosition(position);
+                if(isPositionReachable) {
+                    int movieID = mCursor.getInt(movieIndexColumn);
+                    Log.e(TAG, "movieID in Adapter : " + movieID);
+                    String movieTitle = mCursor.getString(movieIndexColumn);
+                    String movieImageUrl = mCursor.getString(movieImageUrlIndex);
+                    Log.e(TAG, "movieUrl in Adapter : " + movieImageUrl);
 
-                try {
-                    assert movie != null;
-                    Log.d(TAG, movie.getmMovieImage());
-                    Picasso.with(getContext())
-                            .load(movieImageUrl)
-                            .into(posterImage);
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
+                    try {
+                        assert movie != null;
+                        Log.e(TAG, movie.getmMovieImage());
+                        Picasso.with(getContext())
+                                .load(movieImageUrl)
+                                .into(posterImage);
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -104,9 +115,10 @@ public class GridAdapterMovie extends ArrayAdapter<Movies>{
         return convertView;
     }
 
-    public Cursor swapCursor(Cursor dataCursor) {
+    public Cursor swapCursor(Cursor dataCursor, boolean isFavoriteClicked) {
         //check if the cursor is the same as the previous cursor
-        Log.d(TAG, "entered swapCursor");
+        mIsFavoriteClicked = isFavoriteClicked;
+        Log.e(TAG, "entered swapCursor");
         if (mCursor == dataCursor)
             return null;
         Cursor temp = mCursor; //Old cursor
@@ -115,7 +127,7 @@ public class GridAdapterMovie extends ArrayAdapter<Movies>{
         //Check if the cursor is valid one and then update the cursor
         if (dataCursor != null) {
             this.notifyDataSetChanged();
-            Log.d(TAG, "entered swapCursor notif");
+            Log.e(TAG, "entered swapCursor notif");
         }
         return temp;//Previous cursor return
     }
