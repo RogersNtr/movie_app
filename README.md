@@ -3,5 +3,6 @@
 # # Project Overview
 
 # # Before Executing the app
-Upon executing the app, you must set an API KEY, in the "gradle.properties" file, under the variable 'MovieApp_API_KEY'.
+Upon executing the app, you must set an API KEY, in the "gradle.properties" file, under the variable 'MovieApp_API_KEY'; More precisely
+MovieApp_API_KEY = 'your_api_key'
 
