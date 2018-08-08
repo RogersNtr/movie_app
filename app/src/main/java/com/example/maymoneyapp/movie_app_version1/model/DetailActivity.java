@@ -142,6 +142,7 @@ public class DetailActivity extends AppCompatActivity{
                     Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
             }else{
                 mIsAlreadyMarkAsFavorite = true;
+                getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, null, null);
                 btn.setBackgroundColor(getResources().getColor(R.color.dark_gray));
                 btn.setText(getString(R.string.mark_as_favorite_btn));
 
