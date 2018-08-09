@@ -26,4 +26,9 @@ public final class Constant {
     public final static String PARCELABLE_MOVIE_DETAIL_KEY = "saved_detail";
     public final static String MOVIE_TRAILER_KEY = "saved_trailers";
     public final static String MOVIE_REVIEWS_KEY = "saved_reviews";
+
+    //Constant for the MainActivity
+    public final static String SAVE_INSTANCE_GRID_KEY = "movies"; // Key for retrieving the instance saved in the Bundle
+    public static final String SAVE_OCCURENCE_ERROR = "error_message";
+    public static final int CURSOR_LOADER_ID = 13; // the id that uniquely identify a loader.*
 }

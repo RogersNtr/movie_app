@@ -15,7 +15,7 @@ public class Movies implements Parcelable {
     private String mRealeaseDate;
     private int mMovieId;
     private String mMovieTrailer;
-    private String mReviewContent;
+
 
     public Movies(){}
     public Movies(String imageURL, String movieTitle, String overview, String userRating, String releaseDate, int movieId){
@@ -28,14 +28,6 @@ public class Movies implements Parcelable {
         mMovieId = movieId;
     }
 
-    //Constractor for the review
-    public Movies(String reviewContent, int movieDetailId){
-        mReviewContent = reviewContent;
-        mMovieId = movieDetailId;
-    }
-    public Movies(String movieTrailer){
-        mMovieTrailer = movieTrailer;
-    }
     private Movies(Parcel in) {
         mMovieImage = in.readString();
         mMovieTitle = in.readString();

@@ -2,7 +2,6 @@ package com.example.maymoneyapp.movie_app_version1.Utils;
 
 import android.util.Log;
 
-import com.example.maymoneyapp.movie_app_version1.model.MovieDetail;
 import com.example.maymoneyapp.movie_app_version1.model.Movies;
 
 import org.json.JSONArray;
@@ -32,7 +31,7 @@ public final  class JsonUtils {
             JSONObject jsonResults;
             String imagePath, title, overview, imageName, userRating, releaseDate;
             int id;
-            Long testID;
+
             for(int i=0; i<results.length();i++){
                 jsonResults = results.getJSONObject(i);
                 assert jsonResults == null;
@@ -57,9 +56,9 @@ public final  class JsonUtils {
         return listOfReturnMovies;
     }
     public static List<String> parseJsonDetailMovieReview(String jsonToParse){
-        JSONObject jsonReview = null;
+        JSONObject jsonReview ;
         JSONArray results_;
-        String review = null;
+        String review ;
         List<String> listOfReviews = new ArrayList<>();
         String author;
         try {
@@ -88,7 +87,7 @@ public final  class JsonUtils {
 
     public static List<String> parseJsonDetailTrailers(String jsonToParse){
         JSONObject jsonTrailer;
-        JSONArray results_ = null;
+        JSONArray results_ ;
         String videoName;
         String idMovie; //Movie Id
         ArrayList<String> listTrailers = new ArrayList<>();

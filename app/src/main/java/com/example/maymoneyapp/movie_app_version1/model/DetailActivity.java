@@ -1,10 +1,10 @@
 package com.example.maymoneyapp.movie_app_version1.model;
 
 import android.app.SearchManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -22,7 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.maymoneyapp.movie_app_version1.MainActivity;
 import com.example.maymoneyapp.movie_app_version1.R;
 import com.example.maymoneyapp.movie_app_version1.Utils.Constant;
 import com.example.maymoneyapp.movie_app_version1.Utils.JsonUtils;
@@ -46,13 +45,14 @@ public class DetailActivity extends AppCompatActivity{
     private TextView mOverview;
     private TextView mTvCurrentMenuItem; //The menu item selected (Review or Trailers).
     private ListView mReview;
-    private List<String> mListReview;
-    private ListView mTrailersListView;
-    private Movies mMovieDetails;
     private ImageView mMovieImageThumbnail;
+    private ListView mTrailersListView;
+
+    private Movies mMovieDetails;
     private List<String> mTrailersList;
+    private List<String> mListReview;
     private boolean isErrorOccuredDetail = false;
-    private boolean mIsAlreadyMarkAsFavorite = true; //A variable use to favorite or unfavorite a movie.
+
 
 
     @Override
@@ -70,12 +70,12 @@ public class DetailActivity extends AppCompatActivity{
         mReview = findViewById(R.id.lv_reviews);
         mTrailersListView = findViewById(R.id.lv_trailers);
 
+
         // Get the Movie Object
         Intent intent = getIntent();
 
         // Handle Rotation change
         if(savedInstanceState == null){
-            Log.d(TAG, "+++++++++++++GOGOGOG");
             mMovieDetails = intent.getParcelableExtra(Constant.MOVIE_EXTRA);
             assert mMovieDetails == null;
             makeRequestAPIMovies(getString(R.string.show_trailers));//Show trailers by default.
@@ -90,6 +90,7 @@ public class DetailActivity extends AppCompatActivity{
         }
 
     }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -124,41 +125,64 @@ public class DetailActivity extends AppCompatActivity{
         Button btn = (Button)view;
         Log.d(TAG, "value of mMovieDetails : " + mMovieDetails.getmMovieId());
         if (mMovieDetails != null ) {
-            if (mIsAlreadyMarkAsFavorite) {
+           Log.e(TAG, " isFavorite" + isFavorite(mMovieDetails.getmMovieId()));
+            if (!isFavorite(mMovieDetails.getmMovieId())) {
 
                 //stack data in the content value
-                mIsAlreadyMarkAsFavorite = false;
+
                 view.setBackgroundColor(getResources().getColor(R.color.green_light));
                 btn.setText(getString(R.string.mark_as_unfavorite_btn));
                 Log.d(TAG, "value of ID : " + mMovieDetails.getmMovieId());
                 contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, mMovieDetails.getmMovieId());
                 contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE, mMovieDetails.getmMovieTitle());
                 contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_URL, mMovieDetails.getmMovieImage());
+                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW, mMovieDetails.getmMovieOverview());
+                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE, mMovieDetails.getmRealeaseDate());
+                contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_USER_RATING, mMovieDetails.getmUserRating());
                 //contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_TRAILER, mTrailersList);
 
                 //Insert data in the database using a content resolver
                 Uri uri = getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, contentValues);
-                if (uri !=null)
-                    Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();
+                /*if (uri !=null)
+                    Toast.makeText(this, uri.toString(), Toast.LENGTH_SHORT).show();*/
             }else{
-                mIsAlreadyMarkAsFavorite = true;
-                getContentResolver().delete(MovieContract.MovieEntry.CONTENT_URI, null, null);
                 btn.setBackgroundColor(getResources().getColor(R.color.dark_gray));
                 btn.setText(getString(R.string.mark_as_favorite_btn));
-
+                Uri uri = MovieContract.MovieEntry.CONTENT_URI;
+                uri = ContentUris.withAppendedId(uri, mMovieDetails.getmMovieId());
+                int movieDeleted = getContentResolver().delete(uri, null, null);
+                //Toast.makeText(this, "movie deleted : "+ movieDeleted, Toast.LENGTH_SHORT).show();
             }
 
         }
     }
+    private boolean isFavorite(int id){
+        boolean isAlreadyMarkAsFavorite;
+        //String strId = String.valueOf(id);
+        //String selection = MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=?";
+        Uri uri = ContentUris.withAppendedId(MovieContract.MovieEntry.CONTENT_URI, id);
+        Cursor returnCursor =  getContentResolver().query(uri,
+                null,
+                null,
+                null,
+                null);
+        if(returnCursor !=null && returnCursor.moveToFirst()){
+            isAlreadyMarkAsFavorite = true;
+            returnCursor.close();
+        }
+        else
+            isAlreadyMarkAsFavorite = false;
+        return  isAlreadyMarkAsFavorite;
+    }
+
 
     //===Asyntask for Trailers
     private class MovieDetailAPITrailerRequest extends AsyncTask<URL, Void, List<String>>{
 
         @Override
         protected List<String> doInBackground(URL... urls) {
-            String jsonResultReview, jsonResultVideos;
+            String jsonResultVideos;
 
-            List<String> trailersList =  new ArrayList<>();
             if (urls[0] != null) {
                 jsonResultVideos = Networksutils.getResponseFromHttpUrl(urls[0]);
                 Log.e(TAG, "video" + jsonResultVideos);
@@ -186,10 +210,8 @@ public class DetailActivity extends AppCompatActivity{
 
         @Override
         protected List<String> doInBackground(URL... urls) {
-            String jsonResultReview, jsonResultVideos;
+            String jsonResultReview;
 
-            List<String> trailersList =  new ArrayList<>();
-            List<String> review;
             if (urls[0] != null) {
                 jsonResultReview = Networksutils.getResponseFromHttpUrl(urls[0]);
                 Log.e(TAG, "review" + jsonResultReview);
@@ -222,7 +244,7 @@ public class DetailActivity extends AppCompatActivity{
         mReview.setVisibility(View.GONE);
         mTrailersListView.setVisibility(View.VISIBLE);
         mTvCurrentMenuItem.setText(getString(R.string.trailer_label));
-        ArrayAdapter<String> arrayAdapterTrailers = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, trailerList);
+        ArrayAdapter<String> arrayAdapterTrailers = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, trailerList);
         mTrailersListView.setAdapter(arrayAdapterTrailers);
         mTrailersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -236,7 +258,7 @@ public class DetailActivity extends AppCompatActivity{
         mTrailersListView.setVisibility(View.GONE);
         mReview.setVisibility(View.VISIBLE);
         mTvCurrentMenuItem.setText(getString(R.string.label_reviews));
-        ArrayAdapter<String> arrayAdapterReview = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, reviewList);
+        ArrayAdapter<String> arrayAdapterReview = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, reviewList);
         mReview.setAdapter(arrayAdapterReview);
     }
 
@@ -252,27 +274,30 @@ public class DetailActivity extends AppCompatActivity{
         Toast.makeText(getApplicationContext(),getString(R.string.error_connection_problem), Toast.LENGTH_LONG).show();
     }
 
-    public void setmTrailersList(List<String> mTrailersList) {
+    private void setmTrailersList(List<String> mTrailersList) {
         this.mTrailersList = mTrailersList;
     }
 
     private void populateUI() {
-        Log.d(TAG, mMovieDetails.getmRealeaseDate());
-        Log.d(TAG, mMovieDetails.getmMovieImage());
-        Log.d(TAG, mMovieDetails.getmMovieOverview());
-        Log.d(TAG, mMovieDetails.getmUserRating());
-        Log.d(TAG, mMovieDetails.getmMovieTitle());
-        Log.d(TAG, ""+mMovieDetails.getmMovieId());
+        if(mMovieDetails != null) {
+            Log.d(TAG, mMovieDetails.getmRealeaseDate());
+            Log.d(TAG, mMovieDetails.getmMovieImage());
+            Log.d(TAG, mMovieDetails.getmMovieOverview());
+            Log.d(TAG, mMovieDetails.getmUserRating());
+            Log.d(TAG, mMovieDetails.getmMovieTitle());
+            Log.d(TAG, "" + mMovieDetails.getmMovieId());
 
 
-        //TODO Check the nullability of the different class
-        mReleaseDate.setText(mMovieDetails.getmRealeaseDate());
-        mTitle.setText(mMovieDetails.getmMovieTitle());
-        mUserRating.setText(mMovieDetails.getmUserRating());
-        mOverview.setText(mMovieDetails.getmMovieOverview());
+            //TODO Check the nullability of the different class
+            mReleaseDate.setText(mMovieDetails.getmRealeaseDate());
+            mTitle.setText(mMovieDetails.getmMovieTitle());
+            mUserRating.setText(mMovieDetails.getmUserRating());
+            mOverview.setText(mMovieDetails.getmMovieOverview());
 
-        //Adding the image using Picasso.
-        Picasso.with(getBaseContext()).load(mMovieDetails.getmMovieImage()).into(mMovieImageThumbnail);
+            //Adding the image using Picasso.
+            Picasso.with(getBaseContext()).load(mMovieDetails.getmMovieImage()).into(mMovieImageThumbnail);
+        }else
+            throw new UnsupportedOperationException("Impossible to update the UI ");
 
     }
     private void setReview( List<String> reviews){
@@ -283,11 +308,11 @@ public class DetailActivity extends AppCompatActivity{
      * @param requestType : It represent the type of request(Review or trailer) trigger by te user.
      * */
     private void makeRequestAPIMovies(String requestType) {
-        int movieID=-100 ;
+        int movieID ;
         ArrayList<URL> urls = new ArrayList<>();
-        URL urlReview = null;
-        URL urlVideos = null;
-        URL[] url = null;
+        URL urlReview;
+        URL urlVideos;
+
         if(mMovieDetails !=null) {
             movieID = mMovieDetails.getmMovieId();
             Log.e(TAG, "movieID : "+ movieID);
@@ -297,13 +322,7 @@ public class DetailActivity extends AppCompatActivity{
                 if (urlReview!=null && urlVideos!=null) {
                     urls.add(urlReview);
                     urls.add(urlVideos);
-                    //Convert the urls to an Array to pass to the Asyntask
-                    try {
-                        url = (URL[]) urls.toArray(new URL[urls.size()]);
-                    }catch (ClassCastException e){
-                        showErrorMessage();
-                        e.printStackTrace();
-                    }
+
                     if (requestType.equalsIgnoreCase(getString(R.string.show_trailers)))
                         new MovieDetailAPITrailerRequest().execute(urlVideos);
                     else if (requestType.equalsIgnoreCase(getString(R.string.show_reviews)))

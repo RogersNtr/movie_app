@@ -11,7 +11,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
 import com.example.maymoneyapp.movie_app_version1.R;
-import com.example.maymoneyapp.movie_app_version1.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -21,11 +20,8 @@ import java.util.List;
  */
 
 public class GridAdapterMovie extends ArrayAdapter<Movies>{
-    private Cursor mCursor; // The cursor that hold data from the database query.
 
     private final static String TAG = GridAdapterMovie.class.getSimpleName();
-    private static final String LOG_TAG = GridAdapterMovie.class.getSimpleName();
-    private boolean mIsFavoriteClicked = false;
 
     /**
      * This is our own custom constructor (it doesn't mirror a superclass constructor).
@@ -62,15 +58,16 @@ public class GridAdapterMovie extends ArrayAdapter<Movies>{
         // If this is a new View object we're getting, then inflate the layout.
         // If not, this view already has the layout inflated from a previous call to getView,
         // and we modify the View widgets as usual.
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(
-                    R.layout.grid_view_item, parent, false);
-        }
 
-        ImageView posterImage = convertView.findViewById(R.id.image_movie);
-        Log.e(TAG, "Enter getView  " + mIsFavoriteClicked);
-        if (!mIsFavoriteClicked) {
+        boolean mIsFavoriteClicked = false;
+        Log.d(TAG, "Enter getView  " + mIsFavoriteClicked);
+        //if (!mIsFavoriteClicked) {
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(
+                        R.layout.grid_view_item, parent, false);
+            }
 
+            ImageView posterImage = convertView.findViewById(R.id.image_movie);
             try {
                 assert movie != null;
                 Log.d(TAG, movie.getmMovieImage());
@@ -80,55 +77,8 @@ public class GridAdapterMovie extends ArrayAdapter<Movies>{
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
-        }else {
-            Log.e(TAG, "Enter getView Update of the Cursor: " + mCursor);
-            if (mCursor != null) {
-                //clear();
-
-                Log.e(TAG, "Enter getView Update of the Cursor");
-                int Index = mCursor.getColumnIndex(MovieContract.MovieEntry._ID);
-                int movieIndexColumn = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
-                int movieTitleIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE);
-                int movieImageUrlIndex = mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_URL);
-
-                boolean isPositionReachable = mCursor.moveToPosition(position);
-                if(isPositionReachable) {
-                    int movieID = mCursor.getInt(movieIndexColumn);
-                    Log.e(TAG, "movieID in Adapter : " + movieID);
-                    String movieTitle = mCursor.getString(movieIndexColumn);
-                    String movieImageUrl = mCursor.getString(movieImageUrlIndex);
-                    Log.e(TAG, "movieUrl in Adapter : " + movieImageUrl);
-
-                    try {
-                        assert movie != null;
-                        Log.e(TAG, movie.getmMovieImage());
-                        Picasso.with(getContext())
-                                .load(movieImageUrl)
-                                .into(posterImage);
-                    } catch (NullPointerException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
 
         return convertView;
     }
 
-    public Cursor swapCursor(Cursor dataCursor, boolean isFavoriteClicked) {
-        //check if the cursor is the same as the previous cursor
-        mIsFavoriteClicked = isFavoriteClicked;
-        Log.e(TAG, "entered swapCursor");
-        if (mCursor == dataCursor)
-            return null;
-        Cursor temp = mCursor; //Old cursor
-        this.mCursor = dataCursor; //New Cursor value assigns.
-
-        //Check if the cursor is valid one and then update the cursor
-        if (dataCursor != null) {
-            this.notifyDataSetChanged();
-            Log.e(TAG, "entered swapCursor notif");
-        }
-        return temp;//Previous cursor return
-    }
 }

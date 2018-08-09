@@ -74,7 +74,9 @@
                 android:padding="5dp"
                 android:onClick="onClickMarkAsFavorite"
                 android:background="@android:color/darker_gray"
+                android:visibility="visible"
                 />
+
             <!--<TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

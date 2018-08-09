@@ -3,8 +3,6 @@ package com.example.maymoneyapp.movie_app_version1.Utils;
 import android.net.Uri;
 import android.util.Log;
 
-import com.example.maymoneyapp.movie_app_version1.BuildConfig;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -39,7 +37,7 @@ public final class Networksutils {
      *
      * */
     public static URL buildURLDetail(String searchAPIQuery, int movieId){
-        Uri buildUri = null;
+        Uri buildUri;
         buildUri = Uri.parse(Constant.BASE_URL_API).buildUpon().appendPath(String.valueOf(movieId)).appendEncodedPath(searchAPIQuery)
                 .appendQueryParameter(PARAM_API_KEY, API_KEY).
                         build();
@@ -53,7 +51,7 @@ public final class Networksutils {
         return url;
     }
     public static URL buildURLAPI(String searchAPIQuery){
-        Uri buildUri = null;
+        Uri buildUri;
         buildUri = Uri.parse(Constant.BASE_URL_API).buildUpon().appendPath(searchAPIQuery)
                 .appendQueryParameter(PARAM_API_KEY, API_KEY).
                             build();
@@ -96,7 +94,7 @@ public final class Networksutils {
     public static String getResponseFromHttpUrl(URL url){
         HttpsURLConnection urlConnection = null;
         String response = null;
-        InputStream inConnection = null;
+        InputStream inConnection;
 
         try {
             urlConnection = (HttpsURLConnection)url.openConnection();

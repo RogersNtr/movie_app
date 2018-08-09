@@ -3,7 +3,6 @@ package com.example.maymoneyapp.movie_app_version1;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -36,11 +35,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private Boolean isErrorOccured = false;
     private final static String TAG = MainActivity.class.getSimpleName();
     private List<Movies> mArrayMovies = new ArrayList<>();
-    private GridAdapterMovie mGridMovieAdapter;
-    private final static String SAVE_INSTANCE_GRID_KEY = "movies"; // Key for retrieving the instance saved in the Bundle
-    private static final String SAVE_OCCURENCE_ERROR = "error_message";
-    private static final int CURSOR_LOADER_ID = 13; // the id that uniquely identify a loader.*
-    private Cursor mCursor;
 
 
     @Override
@@ -58,36 +52,21 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 showErrorMessage();
             //mArrayMovies = new ArrayList<>();
         }
-        else if(savedInstanceState.containsKey(SAVE_INSTANCE_GRID_KEY)){
+        else if(savedInstanceState.containsKey(Constant.SAVE_INSTANCE_GRID_KEY)){
             if (!isErrorOccured) {
-                mArrayMovies = savedInstanceState.getParcelableArrayList(SAVE_INSTANCE_GRID_KEY);
+                mArrayMovies = savedInstanceState.getParcelableArrayList(Constant.SAVE_INSTANCE_GRID_KEY);
                 showGrid(mArrayMovies);
             }else{
                 showErrorMessage();
             }
         }
-        Log.e(TAG, "init Loader start");
-        //getSupportLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
-        Log.e(TAG, "init Loader end");
-    }
 
-    /**
-     * This method is called after this activity has been paused or restarted.
-     * Often, this is after new data has been inserted through an AddTaskActivity,
-     * so this restarts the loader to re-query the underlying data for any changes.
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // re-queries for all movies
-        //getSupportLoaderManager().restartLoader(CURSOR_LOADER_ID, null, this);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-       outState.putParcelableArrayList(SAVE_INSTANCE_GRID_KEY, (ArrayList<Movies>) mArrayMovies);
         super.onSaveInstanceState(outState);
+       outState.putParcelableArrayList(Constant.SAVE_INSTANCE_GRID_KEY, (ArrayList<Movies>) mArrayMovies);
     }
 
     @Override
@@ -124,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     private void startLoader(Bundle bundle){
-        getSupportLoaderManager().initLoader(CURSOR_LOADER_ID, bundle, this);
+        getSupportLoaderManager().restartLoader(Constant.CURSOR_LOADER_ID, bundle, this);
         //mGridMovieAdapter.swapCursor(data);
     }
 
@@ -160,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             @Override
             public Cursor loadInBackground() {
                 // Will implement to load data
-                Log.e("loadInbackground:", "cursor value before querying: " + 0);
+                Log.e("loadInbackground:", "cursor value before querying: " + -15);
                 // Query and load all movies data in the background;
                 // [Hint] use a try/catch block to catch any errors in loading data
 
@@ -199,14 +178,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (mGridMovieAdapter !=null){
-            /*if (data !=null)
-                mGridMovieAdapter.clear();*/
+        List<Movies> movieList = cursorToMovieList(data);
+        setmArrayMovies(movieList);
+        showGrid(movieList);
+        /*if (mGridMovieAdapter !=null){
+            *//*if (data != null)
+                mGridMovieAdapter.clear();*//*
             mGridMovieAdapter.swapCursor(data, true);
             Toast.makeText(this, "1. mGridMovieAdapter : " + mGridMovieAdapter, Toast.LENGTH_LONG).show();
-        }
+        }*/
 
     }
+
 
     /**
      * Called when a previously created loader is being reset, and thus
@@ -217,7 +200,34 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mGridMovieAdapter.swapCursor(null, false);
+        //mGridMovieAdapter.swapCursor(null, false);
+    }
+
+    private List<Movies> cursorToMovieList(Cursor cursorData) {
+        ArrayList<Movies> moviesList = new ArrayList<>();
+
+        String imageUrl, movieTitle, movieOverview, movieUserRating, movieReleaseDate;
+        int movieID;
+
+        int imageUrlDbColumnIndex = cursorData.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_URL);
+        int movieIDDbColumnIndex = cursorData.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID);
+        int movieTitleDbColumnIndex = cursorData.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_TITLE);
+        int movieOverviewIndex = cursorData.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_OVERVIEW);
+        int movieReleaseDateIndex = cursorData.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_RELEASE_DATE);
+        int movieUserRatingIndex = cursorData.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_USER_RATING);
+
+        while (cursorData.moveToNext()){
+            imageUrl = cursorData.getString(imageUrlDbColumnIndex);
+            movieTitle = cursorData.getString(movieTitleDbColumnIndex);
+            movieID = cursorData.getInt(movieIDDbColumnIndex);
+            movieOverview = cursorData.getString(movieOverviewIndex);
+            movieReleaseDate = cursorData.getString(movieReleaseDateIndex);
+            movieUserRating = cursorData.getString(movieUserRatingIndex);
+
+            moviesList.add(new Movies(imageUrl, movieTitle, movieOverview, movieUserRating, movieReleaseDate, movieID));
+        }
+
+        return moviesList;
     }
 
     public class APIRequest extends AsyncTask<URL, Void, List<Movies>> {
@@ -263,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private void showGrid(List<Movies> result) {
         mGridView.setVisibility(View.VISIBLE);
-        mGridMovieAdapter = new GridAdapterMovie(this, result);
+        GridAdapterMovie mGridMovieAdapter = new GridAdapterMovie(this, result);
         Log.d(TAG, String.valueOf(result.size()));
         mGridView.setAdapter(mGridMovieAdapter);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
